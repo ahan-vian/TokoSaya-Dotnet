@@ -11,8 +11,8 @@ using TokoSaya.Data;
 namespace TokoSaya.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20260403112904_InitialIdentity")]
-    partial class InitialIdentity
+    [Migration("20260404021401_InitialIdentitySetup")]
+    partial class InitialIdentitySetup
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
