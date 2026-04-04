@@ -11,70 +11,196 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - TokoSaya</title>
     <script type="importmap"></script>
+
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/TokoSaya.styles.css" asp-append-version="true" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
+
+    <style>
+        .custom-navbar {
+            background: rgba(255, 255, 255, 0.92);
+            backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px);
+            border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+        }
+
+        .navbar-brand.custom-brand {
+            font-size: 1.4rem;
+            font-weight: 800;
+            letter-spacing: 0.3px;
+            color: #111827 !important;
+        }
+
+        .navbar-brand.custom-brand span {
+            color: #0d6efd;
+        }
+
+        .custom-nav-link {
+            color: #374151 !important;
+            font-weight: 600;
+            padding: 10px 16px !important;
+            border-radius: 999px;
+            transition: all 0.25s ease;
+        }
+
+        .custom-nav-link:hover {
+            background-color: #f3f4f6;
+            color: #0d6efd !important;
+        }
+
+        .auth-pill {
+            padding: 8px 18px !important;
+            border-radius: 999px;
+            font-weight: 600;
+            transition: all 0.25s ease;
+        }
+
+        .login-pill {
+            color: #0d6efd !important;
+            border: 1px solid rgba(13, 110, 253, 0.18);
+            background: #eff6ff;
+        }
+
+        .login-pill:hover {
+            background: #dbeafe;
+            color: #084298 !important;
+        }
+
+        .register-pill {
+            background: linear-gradient(135deg, #0d6efd, #2563eb);
+            color: #fff !important;
+            box-shadow: 0 10px 20px rgba(13, 110, 253, 0.18);
+        }
+
+        .register-pill:hover {
+            color: #fff !important;
+            transform: translateY(-1px);
+            box-shadow: 0 14px 24px rgba(13, 110, 253, 0.24);
+        }
+
+        .hello-badge {
+            background: #f8fafc;
+            color: #111827;
+            border: 1px solid #e5e7eb;
+            border-radius: 999px;
+            padding: 8px 16px;
+            font-weight: 600;
+        }
+
+        .logout-btn {
+            border-radius: 999px;
+            padding: 8px 18px;
+            font-weight: 600;
+        }
+
+        main {
+            min-height: calc(100vh - 160px);
+        }
+    </style>
 </head>
 
 <body>
     <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
-            <div class="container-fluid">
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">TokoSaya</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse"
-                        aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
+        <nav class="navbar navbar-expand-lg custom-navbar sticky-top py-3">
+            <div class="container">
+                <a class="navbar-brand custom-brand" asp-area="" asp-controller="Home" asp-action="Index">
+                    Toko<span>Saya</span>
+                </a>
+
+                <button class="navbar-toggler border-0 shadow-none" type="button" data-bs-toggle="collapse" data-bs-target="#mainNavbar"
+                        aria-controls="mainNavbar" aria-expanded="false" aria-label="Toggle navigation">
+                    <span><i class="bi bi-list fs-2"></i></span>
                 </button>
-                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                    <ul class="navbar-nav flex-grow-1">
+
+                <div class="collapse navbar-collapse" id="mainNavbar">
+                    <ul class="navbar-nav mx-auto mb-3 mb-lg-0 gap-2">
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
+                            <a class="nav-link custom-nav-link" asp-area="" asp-controller="Home" asp-action="Index">
+                                <i class="bi bi-house-door me-1"></i> Home
+                            </a>
                         </li>
+
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home"
-                               asp-action="Privacy">Privacy</a>
+                            <a class="nav-link custom-nav-link" asp-controller="Category" asp-action="Index">
+                                <i class="bi bi-grid me-1"></i> Category
+                            </a>
                         </li>
-                        <ul>
-                            @if (SignInManager.IsSignedIn(User))
-                            {
-                                var currentuser = await UserManager.GetUserAsync(User);
-                                <li class="nav-item d-flex align-items-center me-2">
-                                    <span class="nav-link text-dark">
-                                        Halo, @(currentuser?.Name)
-                                    </span>
-                                </li>
-                                <li class="nav-item">
-                                    <form asp-controller="Account" asp-action="Logout" method="post" class="d-inline">
-                                        <button type="submit" class="btn btn-outline-danger btn-sm">Logout</button>
-                                    </form>
-                                </li>
-                            }
-                            else
-                            {
-                                <li class="nav-item">
-                                    <a class="nav-link" asp-controller="Account" asp-action="Login">Login</a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link" asp-controller="Account" asp-action="Register">Register</a>
-                                </li>
-                            }
-                        </ul>
+
+                        <li class="nav-item">
+                            <a class="nav-link custom-nav-link" asp-controller="Product" asp-action="Index">
+                                <i class="bi bi-box-seam me-1"></i> Product
+                            </a>
+                        </li>
+
+                        <li class="nav-item">
+                            <a class="nav-link custom-nav-link" asp-controller="Cart" asp-action="Index">
+                                <i class="bi bi-cart3 me-1"></i> Cart
+                            </a>
+                        </li>
+
+                        <li class="nav-item">
+                            <a class="nav-link custom-nav-link" asp-area="" asp-controller="Home" asp-action="Privacy">
+                                <i class="bi bi-shield-lock me-1"></i> Privacy
+                            </a>
+                        </li>
+                    </ul>
+
+                    <ul class="navbar-nav align-items-lg-center gap-2">
+                        @if (SignInManager.IsSignedIn(User))
+                        {
+                            var currentuser = await UserManager.GetUserAsync(User);
+
+                            <li class="nav-item">
+                                <span class="nav-link hello-badge">
+                                    <i class="bi bi-person-circle me-1"></i>
+                                    Halo, @(currentuser?.Name ?? "User")
+                                </span>
+                            </li>
+
+                            <li class="nav-item">
+                                <form asp-controller="Account" asp-action="Logout" method="post" class="d-inline">
+                                    @Html.AntiForgeryToken()
+                                    <button type="submit" class="btn btn-outline-danger logout-btn">
+                                        <i class="bi bi-box-arrow-right me-1"></i> Logout
+                                    </button>
+                                </form>
+                            </li>
+                        }
+                        else
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link auth-pill login-pill" asp-controller="Account" asp-action="Login">
+                                    <i class="bi bi-box-arrow-in-right me-1"></i> Login
+                                </a>
+                            </li>
+
+                            <li class="nav-item">
+                                <a class="nav-link auth-pill register-pill" asp-controller="Account" asp-action="Register">
+                                    <i class="bi bi-person-plus me-1"></i> Register
+                                </a>
+                            </li>
+                        }
                     </ul>
                 </div>
             </div>
         </nav>
     </header>
-    <div class="container">
+
+    <div class="container py-4">
         <main role="main" class="pb-3">
             @RenderBody()
         </main>
     </div>
 
-    <footer class="border-top footer text-muted">
-        <div class="container">
-            &copy; 2026 - TokoSaya - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+    <footer class="border-top footer text-muted py-3 bg-white">
+        <div class="container text-center">
+            &copy; 2026 - <strong>TokoSaya</strong> -
+            <a asp-area="" asp-controller="Home" asp-action="Privacy" class="text-decoration-none">Privacy</a>
         </div>
     </footer>
+
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>

@@ -1,0 +1,76 @@
+@model IEnumerable<TokoSaya.Models.Category>
+
+@{
+    ViewData["Title"] = "Category";
+}
+
+<div class="container py-5">
+    <div class="card border-0 shadow-lg rounded-4 overflow-hidden">
+        <div class="card-header bg-dark text-white py-4 px-4 border-0">
+            <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
+                <div>
+                    <h2 class="fw-bold mb-1">Manajemen Kategori</h2>
+                    <p class="mb-0 text-white-50">Kelola data kategori produk dengan mudah</p>
+                </div>
+                <a asp-controller="Category" asp-action="Create" class="btn btn-light btn-lg rounded-pill px-4 fw-semibold">
+                    <i class="bi bi-plus-circle me-2"></i>Tambah Kategori
+                </a>
+            </div>
+        </div>
+
+        <div class="card-body p-4">
+            @if (Model != null && Model.Any())
+            {
+                <div class="table-responsive">
+                    <table class="table align-middle table-hover">
+                        <thead class="table-light">
+                            <tr>
+                                <th class="py-3">No</th>
+                                <th class="py-3">Nama Kategori</th>
+                                <th class="py-3">Display Order</th>
+                                <th class="py-3 text-center">Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @{
+                                int no = 1;
+                            }
+                            @foreach (var obj in Model)
+                            {
+                                <tr>
+                                    <td class="fw-semibold">@no</td>
+                                    <td>
+                                        <span class="fw-semibold text-dark">@obj.Name</span>
+                                    </td>
+                                    <td class="text-center">
+                                        <div class="d-flex justify-content-center gap-2 flex-wrap">
+                                            <a asp-controller="Category" asp-action="Edit" asp-route-id="@obj.Id"
+                                               class="btn btn-warning btn-sm rounded-pill px-3 fw-semibold">
+                                                Edit
+                                            </a>
+                                            <a asp-controller="Category" asp-action="Delete" asp-route-id="@obj.Id"
+                                               class="btn btn-danger btn-sm rounded-pill px-3 fw-semibold">
+                                                Delete
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                                no++;
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+            else
+            {
+                <div class="text-center py-5">
+                    <h4 class="fw-bold text-secondary mb-2">Belum ada kategori</h4>
+                    <p class="text-muted mb-4">Tambahkan kategori baru untuk mulai mengelola produk.</p>
+                    <a asp-controller="Category" asp-action="Create" class="btn btn-dark rounded-pill px-4">
+                        Tambah Kategori
+                    </a>
+                </div>
+            }
+        </div>
+    </div>
+</div>
