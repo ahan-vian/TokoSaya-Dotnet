@@ -57,7 +57,7 @@
                                         <div class="fw-bold text-dark">@item.Product?.Name</div>
                                     </td>
                                     <td>
-                                        <input type="number" class="form-control" value="@item.Quantity" min="1" />
+                                        <input type="number" class="form-control" value="@item.Quantity" min="1" id="quantity-@item.Id" onchange="updateTotal(@item.Id)" />
                                     </td>
                                     <td>
                                         <span class="fw-semibold text-success">
@@ -65,7 +65,7 @@
                                         </span>
                                     </td>
                                     <td>
-                                        <span class="fw-semibold text-success">
+                                        <span class="fw-semibold text-success" id="total-price-@item.Id">
                                             Rp @((item.Quantity * (item.Product?.Price ?? 0)).ToString("N0"))
                                         </span>
                                     </td>
@@ -93,3 +93,14 @@
         </div>
     </div>
 </div>
+
+@section Scripts {
+    <script>
+        function updateTotal(itemId) {
+            var quantity = document.getElementById("quantity-" + itemId).value;
+            var price = Html.Raw(Json.Serialize(Model.FirstOrDefault(x => x.Id == itemId)?.Product?.Price ?? 0));
+            var totalPrice = quantity * price;
+            document.getElementById("total-price-" + itemId).textContent = "Rp " + totalPrice.toLocaleString();
+        }
+    </script>
+}
