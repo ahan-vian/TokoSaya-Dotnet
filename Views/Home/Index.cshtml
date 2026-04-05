@@ -1,8 +1,33 @@
-﻿@{
+﻿@model IEnumerable<TokoSaya.Models.Product>
+
+@{
     ViewData["Title"] = "Home Page";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<div class="container py-5">
+    <h1 class="display-4 text-center mb-5">Produk Kami</h1>
+
+    <div class="row row-cols-1 row-cols-md-3 row-cols-lg-4 g-4">
+        @foreach (var item in Model)
+        {
+            <div class="col">
+                <div class="card shadow-sm border-0 rounded-4">
+                    <img src="@item.ImageUrl" alt="@item.Name" class="card-img-top"
+                         style="height: 300px; object-fit: cover;" />
+                    <div class="card-body">
+                        <h5 class="card-title text-truncate" style="max-width: 250px;">@item.Name</h5>
+                        <p class="card-text">@item.Description</p>
+                        <p class="card-text fw-semibold text-success">
+                            Rp @item.Price.ToString("N0")
+                        </p>
+                        <!-- Form untuk menambah produk ke keranjang -->
+                        <form asp-controller="Cart" asp-action="AddToCart" method="post">
+                            <input type="hidden" name="productId" value="@item.Id" />
+                            <button type="submit" class="btn btn-primary btn-block">Tambah ke Keranjang</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
 </div>

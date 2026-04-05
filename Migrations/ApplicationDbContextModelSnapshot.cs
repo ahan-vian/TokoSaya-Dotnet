@@ -281,7 +281,7 @@ namespace TokoSaya.Migrations
 
                     b.HasIndex("ProductId");
 
-                    b.ToTable("ShoppingCart");
+                    b.ToTable("ShoppingCarts");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>

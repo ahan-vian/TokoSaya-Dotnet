@@ -11,7 +11,7 @@ using TokoSaya.Data;
 namespace TokoSaya.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20260405055738_AddShoppingCartToDb")]
+    [Migration("20260405072736_AddShoppingCartToDb")]
     partial class AddShoppingCartToDb
     {
         /// <inheritdoc />
@@ -284,7 +284,7 @@ namespace TokoSaya.Migrations
 
                     b.HasIndex("ProductId");
 
-                    b.ToTable("ShoppingCart");
+                    b.ToTable("ShoppingCarts");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
