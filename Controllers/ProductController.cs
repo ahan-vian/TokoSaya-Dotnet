@@ -23,7 +23,7 @@ public class ProductController : Controller
     [HttpGet]
     public IActionResult Index()
     {
-        List<Product> objProductList = _context.Products.Include(u => u.Category).ToList();
+        var objProductList = _context.Products.Include(u => u.Category).ToList();
         return View(objProductList);
     }
 
@@ -53,9 +53,9 @@ public class ProductController : Controller
             {
                 string wwwRootPath = _webHostEnvironment.WebRootPath;
                 string filename = Guid.NewGuid().ToString() + Path.GetExtension(file.FileName);
-                string productPath = Path.Combine(wwwRootPath, "images","products");
+                string productPath = Path.Combine(wwwRootPath, "images", "products");
 
-                if (Directory.Exists(productPath))
+                if (!Directory.Exists(productPath))
                 {
                     Directory.CreateDirectory(productPath);
                 }
@@ -64,11 +64,15 @@ public class ProductController : Controller
                 {
                     file.CopyTo(filestream);
                 }
-                productVM.Product.ImageUrl = "/images/products" + filename;
+
+                productVM.Product.ImageUrl = "/images/products/" + filename;
             }
+
             _context.Products.Add(productVM.Product);
             _context.SaveChanges();
+            return RedirectToAction("Index");
         }
+
         productVM.CategoryList = _context.Categories.Select(u => new SelectListItem
         {
             Text = u.Name,
@@ -85,63 +89,70 @@ public class ProductController : Controller
         {
             return NotFound();
         }
-        var productDb = _context.Products.Find(id);
-        if (productDb == null)
+
+        var productFromDb = _context.Products
+            .Include(u => u.Category)  // Pastikan kategori juga di-include
+            .FirstOrDefault(u => u.Id == id);
+
+        if (productFromDb == null)
         {
             return NotFound();
         }
+
         ProductVM productVM = new ProductVM
         {
+            Product = productFromDb,  // Isi Product dengan data yang ada
             CategoryList = _context.Categories.Select(u => new SelectListItem
             {
                 Text = u.Name,
                 Value = u.Id.ToString()
-            }),
-            Product = new Product()
-
+            })
         };
+
         return View(productVM);
     }
-
     [HttpPost]
     [ValidateAntiForgeryToken]
-
     public IActionResult Edit(ProductVM productVM, IFormFile? file)
     {
         if (ModelState.IsValid)
         {
             var productFromDb = _context.Products.AsNoTracking()
                 .FirstOrDefault(u => u.Id == productVM.Product.Id);
+
             if (productFromDb == null)
             {
                 return NotFound();
             }
+
             if (file != null)
             {
                 string wwwRootPath = _webHostEnvironment.WebRootPath;
                 string fileName = Guid.NewGuid().ToString() + Path.GetExtension(file.FileName);
-                string productPath = Path.Combine(wwwRootPath, "images", "product");
+                string productPath = Path.Combine(wwwRootPath, "images", "products");
+
                 if (!Directory.Exists(productPath))
                 {
                     Directory.CreateDirectory(productPath);
                 }
+
+                // Hapus gambar lama jika ada
                 if (!string.IsNullOrEmpty(productFromDb.ImageUrl))
                 {
-                    string oldImagePath = Path.Combine(
-                        wwwRootPath,
-                        productFromDb.ImageUrl.TrimStart('\\', '/').Replace("/", Path.DirectorySeparatorChar.ToString())
-                    );
+                    string oldImagePath = Path.Combine(wwwRootPath, productFromDb.ImageUrl.TrimStart('\\', '/').Replace("/", Path.DirectorySeparatorChar.ToString()));
+
                     if (System.IO.File.Exists(oldImagePath))
                     {
                         System.IO.File.Delete(oldImagePath);
                     }
                 }
+
                 using (var fileStream = new FileStream(Path.Combine(productPath, fileName), FileMode.Create))
                 {
                     file.CopyTo(fileStream);
                 }
 
-                productVM.Product.ImageUrl = "/images/product/" + fileName;
+                productVM.Product.ImageUrl = "/images/products/" + fileName;
             }
             else
             {
@@ -158,6 +169,7 @@ public class ProductController : Controller
             Text = u.Name,
             Value = u.Id.ToString()
         });
+
         return View(productVM);
     }
     [HttpGet]
@@ -205,13 +217,12 @@ public class ProductController : Controller
         {
             return NotFound();
         }
+
+        // Hapus file gambar dari server
         if (!string.IsNullOrEmpty(productFromDb.ImageUrl))
         {
             string wwwRootPath = _webHostEnvironment.WebRootPath;
-            string imagePath = Path.Combine(
-                wwwRootPath,
-                productFromDb.ImageUrl.TrimStart('\\', '/').Replace("/", Path.DirectorySeparatorChar.ToString())
-            );
+            string imagePath = Path.Combine(wwwRootPath, productFromDb.ImageUrl.TrimStart('\\', '/').Replace("/", Path.DirectorySeparatorChar.ToString()));
 
             if (System.IO.File.Exists(imagePath))
             {

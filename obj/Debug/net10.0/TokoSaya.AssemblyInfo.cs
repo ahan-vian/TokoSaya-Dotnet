@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("TokoSaya")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+f8cd34e0da97d7f654ce4e83fc387fb0fc2c6f1c")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+b51444aebf7a2a7636594ebb6ff92ec9461f19f0")]
 [assembly: System.Reflection.AssemblyProductAttribute("TokoSaya")]
 [assembly: System.Reflection.AssemblyTitleAttribute("TokoSaya")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

@@ -11,8 +11,8 @@ using TokoSaya.Data;
 namespace TokoSaya.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20260404085422_AddProductCategory")]
-    partial class AddProductCategory
+    [Migration("20260405050143_InitialCreateClean")]
+    partial class InitialCreateClean
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
