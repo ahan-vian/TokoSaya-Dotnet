@@ -1,0 +1,100 @@
+@model TokoSaya.ViewModels.ProductVM
+
+@{
+    ViewData["Title"] = "Delete Product";
+}
+
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-xl-10 col-lg-11">
+            <div class="card border-0 shadow-lg rounded-4 overflow-hidden">
+                <div class="card-header border-0 text-white py-4 px-4"
+                     style="background: linear-gradient(135deg, #dc2626, #ef4444);">
+                    <h2 class="fw-bold mb-1">Hapus Produk</h2>
+                    <p class="mb-0 text-white-50">Produk dan gambar akan dihapus permanen</p>
+                </div>
+
+                <div class="card-body p-4 p-lg-5 bg-light">
+                    <div class="alert alert-danger border-0 rounded-4 shadow-sm mb-4">
+                        <h5 class="fw-bold mb-2">Peringatan</h5>
+                        <p class="mb-0">
+                            Produk ini beserta file gambarnya akan dihapus secara permanen dari server.
+                        </p>
+                    </div>
+
+                    <form method="post">
+                        <input asp-for="Product.Id" type="hidden" />
+                        <input asp-for="Product.ImageUrl" type="hidden" />
+
+                        <div class="row g-4">
+                            <div class="col-lg-8">
+                                <div class="card border-0 shadow-sm rounded-4 h-100">
+                                    <div class="card-body p-4">
+                                        <h5 class="fw-bold mb-4">Detail Produk</h5>
+
+                                        <div class="mb-3">
+                                            <label asp-for="Product.Name" class="form-label fw-semibold"></label>
+                                            <input asp-for="Product.Name" class="form-control rounded-3" disabled />
+                                        </div>
+
+                                        <div class="mb-3">
+                                            <label asp-for="Product.Description" class="form-label fw-semibold"></label>
+                                            <textarea asp-for="Product.Description" class="form-control rounded-3"
+                                                      rows="5" disabled></textarea>
+                                        </div>
+
+                                        <div class="mb-3">
+                                            <label asp-for="Product.Price" class="form-label fw-semibold"></label>
+                                            <input asp-for="Product.Price" class="form-control rounded-3" disabled />
+                                        </div>
+
+                                        <div class="mb-3">
+                                            <label asp-for="Product.CategoryId" class="form-label fw-semibold"></label>
+                                            <select asp-for="Product.CategoryId" asp-items="@Model.CategoryList"
+                                                    class="form-select rounded-3" disabled>
+                                                <option disabled selected>--Pilih Kategori--</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-lg-4">
+                                <div class="card border-0 shadow-sm rounded-4">
+                                    <div class="card-body p-4">
+                                        <h5 class="fw-bold mb-4">Preview Gambar</h5>
+
+                                        @if (!string.IsNullOrEmpty(Model.Product.ImageUrl))
+                                        {
+                                            <div class="text-center">
+                                                <img src="@Model.Product.ImageUrl" alt="Product Image"
+                                                     class="img-fluid rounded-4 shadow-sm border"
+                                                     style="max-height: 280px; object-fit: cover;" />
+                                            </div>
+                                        }
+                                        else
+                                        {
+                                            <div class="text-center text-muted py-5 border rounded-4 bg-white">
+                                                Tidak ada gambar
+                                            </div>
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="d-flex gap-3 mt-4 flex-wrap">
+                            <button type="submit" class="btn btn-danger btn-lg rounded-pill px-4 fw-semibold shadow-sm">
+                                Hapus Produk
+                            </button>
+                            <a asp-controller="Product" asp-action="Index"
+                                   class="btn btn-outline-secondary btn-lg rounded-pill px-4 fw-semibold">
+                                Batal
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

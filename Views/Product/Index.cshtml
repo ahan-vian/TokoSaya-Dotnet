@@ -1,0 +1,117 @@
+@model IEnumerable<TokoSaya.Models.Product>
+
+@{
+    ViewData["Title"] = "Product";
+}
+
+<div class="container py-5">
+    <div class="card border-0 shadow-lg rounded-4 overflow-hidden">
+        <div class="card-header border-0 text-white py-4 px-4"
+             style="background: linear-gradient(135deg, #0d6efd, #2563eb);">
+            <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
+                <div>
+                    <h2 class="fw-bold mb-1">Manajemen Produk</h2>
+                    <p class="mb-0 text-white-50">Kelola daftar produk, kategori, harga, dan gambar produk</p>
+                </div>
+                <a asp-controller="Product" asp-action="Create"
+                       class="btn btn-light btn-lg rounded-pill px-4 fw-semibold shadow-sm">
+                    + Tambah Produk
+                </a>
+            </div>
+        </div>
+
+        <div class="card-body p-4 bg-light">
+            @if (Model != null && Model.Any())
+            {
+                <div class="table-responsive">
+                    <table class="table align-middle table-hover bg-white rounded-4 overflow-hidden">
+                        <thead class="table-light">
+                            <tr>
+                                <th class="py-3">No</th>
+                                <th class="py-3">Gambar</th>
+                                <th class="py-3">Nama Produk</th>
+                                <th class="py-3">Deskripsi</th>
+                                <th class="py-3">Kategori</th>
+                                <th class="py-3">Harga</th>
+                                <th class="py-3 text-center">Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @{
+                                int no = 1;
+                            }
+                            @foreach (var obj in Model)
+                            {
+                                <tr>
+                                    <td class="fw-semibold">@no</td>
+
+                                    <td>
+                                        @if (!string.IsNullOrEmpty(obj.ImageUrl))
+                                        {
+                                            <img src="@obj.ImageUrl" alt="@obj.Name" class="rounded-3 border shadow-sm"
+                                                 style="width: 70px; height: 70px; object-fit: cover;" />
+                                        }
+                                        else
+                                        {
+                                            <div class="d-flex align-items-center justify-content-center bg-light border rounded-3 text-muted"
+                                                 style="width: 70px; height: 70px;">
+                                                No Img
+                                            </div>
+                                        }
+                                    </td>
+
+                                    <td>
+                                        <div class="fw-bold text-dark">@obj.Name</div>
+                                    </td>
+
+                                    <td style="max-width: 260px;">
+                                        <span class="text-muted">
+                                            @(obj.Description.Length > 80 ? obj.Description.Substring(0, 80) + "..." :
+                                    obj.Description)
+                                        </span>
+                                    </td>
+
+                                    <td>
+                                        <span class="badge rounded-pill bg-primary-subtle text-primary px-3 py-2">
+                                            @(obj.Category?.Name ?? "-")
+                                        </span>
+                                    </td>
+
+                                    <td>
+                                        <span class="fw-semibold text-success">
+                                            Rp @obj.Price.ToString("N0")
+                                        </span>
+                                    </td>
+
+                                    <td class="text-center">
+                                        <div class="d-flex justify-content-center gap-2 flex-wrap">
+                                            <a asp-controller="Product" asp-action="Edit" asp-route-id="@obj.Id"
+                                                   class="btn btn-warning btn-sm rounded-pill px-3 fw-semibold text-dark">
+                                                Edit
+                                            </a>
+                                            <a asp-controller="Product" asp-action="Delete" asp-route-id="@obj.Id"
+                                                   class="btn btn-danger btn-sm rounded-pill px-3 fw-semibold">
+                                                Delete
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                                no++;
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+            else
+            {
+                <div class="text-center py-5">
+                    <h4 class="fw-bold text-secondary mb-2">Belum ada produk</h4>
+                    <p class="text-muted mb-4">Tambahkan produk baru untuk mulai mengisi katalog toko.</p>
+                    <a asp-controller="Product" asp-action="Create" class="btn btn-primary rounded-pill px-4">
+                        Tambah Produk
+                    </a>
+                </div>
+            }
+        </div>
+    </div>
+</div>
