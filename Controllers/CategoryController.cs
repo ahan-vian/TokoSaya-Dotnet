@@ -1,14 +1,15 @@
 
-
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using TokoSaya.Data;
 using TokoSaya.Models;
-
+using TokoSaya.Utility;
+using Microsoft.AspNetCore.Authorization;
 namespace TokoSaya.Controllers;
-
+[Authorize(Roles = SD.Role_Admin)]
 public class CategoryController : Controller
 {
+    
     public readonly ApplicationDbContext _context;
     public CategoryController(ApplicationDbContext dbContext)
     {

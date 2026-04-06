@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using TokoSaya.Models;
 using TokoSaya.ViewModels;
+using TokoSaya.Utility;
 
 namespace TokoSaya.Controllers;
 
@@ -10,11 +11,13 @@ public class AccountController : Controller
 {
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly SignInManager<ApplicationUser> _signInManager;
+    private readonly RoleManager<IdentityRole> _roleManager;
 
-    public AccountController(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager)
+    public AccountController(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager, RoleManager<IdentityRole> roleManager)
     {
         _userManager = userManager;
         _signInManager = signInManager;
+        _roleManager = roleManager;
     }
 
     [HttpGet]
@@ -41,6 +44,12 @@ public class AccountController : Controller
         var result = await _userManager.CreateAsync(user, register.Password);
         if (result.Succeeded)
         {
+            if (!await _roleManager.RoleExistsAsync(SD.Role_Admin))
+            {
+                await _roleManager.CreateAsync(new IdentityRole(SD.Role_Admin));
+                await _roleManager.CreateAsync(new IdentityRole(SD.Role_Customer));
+            }
+            await _userManager.AddToRoleAsync(user, SD.Role_Customer);
             await _signInManager.SignInAsync(user, isPersistent: false);
         }
         foreach (var error in result.Errors)
