@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using TokoSaya.Data;
 using TokoSaya.Models;
+using TokoSaya.ViewModels;
 
 namespace TokoSaya.Controllers;
 
@@ -19,25 +20,21 @@ public class CartController : Controller
     [HttpPost]
     public IActionResult AddToCart(int productId)
     {
-        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier); // Ambil userId yang sedang aktif
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier); 
         if (userId == null)
         {
             return BadRequest();
         }
-
-        // Cari apakah produk tersebut sudah ada di keranjang untuk user ini
         var cartFromDb = _context.ShoppingCarts
             .FirstOrDefault(c => c.ApplicationUserId == userId && c.ProductId == productId);
 
         if (cartFromDb != null)
         {
-            // Jika produk sudah ada di keranjang, tambahkan kuantitasnya
             cartFromDb.Quantity += 1;
-            _context.ShoppingCarts.Update(cartFromDb); // Update cart yang ada
+            _context.ShoppingCarts.Update(cartFromDb);
         }
         else
         {
-            // Jika produk belum ada di keranjang, buat entri baru
             var newCartItem = new ShoppingCart
             {
                 ApplicationUserId = userId,
@@ -45,7 +42,7 @@ public class CartController : Controller
                 Quantity = 1
             };
 
-            _context.ShoppingCarts.Add(newCartItem); // Tambahkan item baru ke keranjang
+            _context.ShoppingCarts.Add(newCartItem);
         }
 
         _context.SaveChanges();
@@ -59,5 +56,23 @@ public class CartController : Controller
         var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
         var cartItems = _context.ShoppingCarts.Include(u => u.Product).Where(u => u.ApplicationUserId == userId).ToList();
         return View(cartItems);
+    }
+
+    [HttpGet]
+    public IActionResult Summary()
+    {
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        var shoppingCartVM = new ShoppingCartVM()
+        {
+          ListCart = _context.ShoppingCarts.Include(u=> u.Product).Where(u=> u.ApplicationUserId == userId).ToList(),
+          OrderHeader = new OrderHeader()  
+        };
+        decimal orderTotal = 0;
+        foreach(var item in shoppingCartVM.ListCart)
+        {
+            orderTotal += item.Quantity * item.Product.Price;
+        }
+        shoppingCartVM.OrderHeader.OrderTotal = orderTotal;
+        return View(shoppingCartVM);
     }
 }

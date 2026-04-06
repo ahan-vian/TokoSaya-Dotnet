@@ -1,0 +1,133 @@
+@model TokoSaya.ViewModels.ShoppingCartVM
+
+@{
+    ViewData["Title"] = "Ringkasan Belanja";
+}
+
+<div class="container py-5">
+    <div class="row justify-content-between">
+        <!-- Form Pengiriman Kiri -->
+        <div class="col-md-5">
+            <div class="card border-0 shadow-sm rounded-4">
+                <div class="card-header bg-primary text-white py-3 px-4">
+                    <h4 class="fw-bold">Informasi Pengiriman</h4>
+                </div>
+                <div class="card-body p-4">
+                    <form method="post" action="@Url.Action("PlaceOrder", "Cart")">
+                        <!-- Nama -->
+                        <div class="mb-4">
+                            <label asp-for="OrderHeader.Name" class="form-label">Nama Lengkap</label>
+                            <input asp-for="OrderHeader.Name" class="form-control" placeholder="Nama Lengkap Anda" />
+                            <span asp-validation-for="OrderHeader.Name" class="text-danger small"></span>
+                        </div>
+
+                        <!-- Nomor Telepon -->
+                        <div class="mb-4">
+                            <label asp-for="OrderHeader.PhoneNumber" class="form-label">Nomor Telepon</label>
+                            <input asp-for="OrderHeader.PhoneNumber" class="form-control" placeholder="Nomor Telepon Anda" />
+                            <span asp-validation-for="OrderHeader.PhoneNumber" class="text-danger small"></span>
+                        </div>
+
+                        <!-- Alamat -->
+                        <div class="mb-4">
+                            <label asp-for="OrderHeader.StreetAddress" class="form-label">Alamat Pengiriman</label>
+                            <input asp-for="OrderHeader.StreetAddress" class="form-control" placeholder="Alamat lengkap pengiriman" />
+                            <span asp-validation-for="OrderHeader.StreetAddress" class="text-danger small"></span>
+                        </div>
+
+                        <!-- Kota -->
+                        <div class="mb-4">
+                            <label asp-for="OrderHeader.City" class="form-label">Kota</label>
+                            <input asp-for="OrderHeader.City" class="form-control" placeholder="Kota" />
+                            <span asp-validation-for="OrderHeader.City" class="text-danger small"></span>
+                        </div>
+
+                        <!-- Negara Bagian -->
+                        <div class="mb-4">
+                            <label asp-for="OrderHeader.State" class="form-label">Negara Bagian</label>
+                            <input asp-for="OrderHeader.State" class="form-control" placeholder="Negara Bagian" />
+                            <span asp-validation-for="OrderHeader.State" class="text-danger small"></span>
+                        </div>
+
+                        <!-- Kode Pos -->
+                        <div class="mb-4">
+                            <label asp-for="OrderHeader.PostalCode" class="form-label">Kode Pos</label>
+                            <input asp-for="OrderHeader.PostalCode" class="form-control" placeholder="Kode Pos" />
+                            <span asp-validation-for="OrderHeader.PostalCode" class="text-danger small"></span>
+                        </div>
+
+                        <!-- Tombol Submit -->
+                        <div class="d-flex justify-content-between">
+                            <button type="submit" class="btn btn-primary rounded-pill px-4 py-2 fw-semibold">
+                                Pesan Sekarang
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Ringkasan Belanja Kanan -->
+        <div class="col-md-6">
+            <div class="card border-0 shadow-sm rounded-4">
+                <div class="card-header bg-info text-white py-3 px-4">
+                    <h4 class="fw-bold">Ringkasan Belanja</h4>
+                </div>
+                <div class="card-body p-4">
+                    @if (Model.ListCart != null && Model.ListCart.Any())
+                    {
+                        <table class="table table-bordered">
+                            <thead>
+                                <tr>
+                                    <th>Gambar</th>
+                                    <th>Nama Produk</th>
+                                    <th>Jumlah</th>
+                                    <th>Harga per Barang</th>
+                                    <th>Total Harga</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in Model.ListCart)
+                                {
+                                    <tr>
+                                        <td>
+                                            @if (item.Product != null && !string.IsNullOrEmpty(item.Product.ImageUrl))
+                                            {
+                                                <img src="@item.Product.ImageUrl" alt="@item.Product.Name" class="rounded-3" style="width: 70px; height: 70px; object-fit: cover;" />
+                                            }
+                                            else
+                                            {
+                                                <div class="d-flex align-items-center justify-content-center bg-light text-muted" style="width: 70px; height: 70px;">
+                                                    No Img
+                                                </div>
+                                            }
+                                        </td>
+                                        <td>@item.Product?.Name</td>
+                                        <td>@item.Quantity</td>
+                                        <td>Rp @((item.Product?.Price ?? 0).ToString("N0"))</td>
+                                        <td>Rp @((item.Quantity * (item.Product?.Price ?? 0)).ToString("N0"))</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+
+                        <div class="d-flex justify-content-between">
+                            <h5 class="fw-bold">Total Harga:</h5>
+                            <h5 class="fw-bold text-success">Rp @Model.OrderHeader.OrderTotal.ToString("N0")</h5>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="text-center py-5">
+                            <h4 class="fw-bold text-secondary mb-2">Keranjang Anda Kosong</h4>
+                            <p class="text-muted mb-4">Tambahkan produk ke keranjang belanja untuk melanjutkan.</p>
+                            <a asp-controller="Product" asp-action="Index" class="btn btn-primary rounded-pill px-4">
+                                Lanjutkan Belanja
+                            </a>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
