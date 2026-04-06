@@ -2,7 +2,7 @@ using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using TokoSaya.Data;
 using TokoSaya.Models;
-
+using Microsoft.EntityFrameworkCore;
 namespace TokoSaya.Controllers
 {
     public class HomeController : Controller
@@ -14,13 +14,19 @@ namespace TokoSaya.Controllers
             _context = context;
         }
 
-        public IActionResult Index()
+        [HttpGet]
+        public IActionResult Index(string searchString)
         {
-            // Ambil semua produk dari database
-            var products = _context.Products.ToList();
-
-            // Kirim data produk ke view
-            return View(products);
+            ViewData["CurrentFilter"] = searchString;
+            var productList = _context.Products.Include(u => u.Category).AsQueryable();
+            if (!string.IsNullOrEmpty(searchString))
+            {
+                productList = productList.Where(p =>
+                    p.Name.Contains(searchString) ||
+                    (p.Category != null && p.Category.Name.Contains(searchString))
+                );
+            }
+            return View(productList.ToList());
         }
 
         public IActionResult Privacy()

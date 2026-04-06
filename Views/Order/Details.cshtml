@@ -1,5 +1,5 @@
 @model TokoSaya.ViewModels.OrderVM
-
+@using TokoSaya.Utility
 @{
     ViewData["Title"] = "Detail Pesanan";
 }
@@ -51,6 +51,34 @@
                         <h5 class="fw-bold">Total Harga:</h5>
                         <h5 class="fw-bold text-success">Rp @Model.OrderHeader.OrderTotal.ToString("N0")</h5>
                     </div>
+                    <hr class="my-4" />
+                    
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h5 class="fw-bold mb-0">Status:</h5>
+                        <span class="badge bg-dark fs-6 px-3 py-2 rounded-pill">@Model.OrderHeader.OrderStatus</span>
+                    </div>
+
+                    @if (User.IsInRole(SD.Role_Admin))
+                    {
+                        <form method="post">
+                            <input type="hidden" name="id" value="@Model.OrderHeader.Id" />
+                            
+                            @if (Model.OrderHeader.OrderStatus == SD.StatusPending)
+                            {
+                                <button type="submit" asp-action="StartProcessing"
+                                        class="btn btn-primary w-100 rounded-pill fw-bold py-2 shadow-sm">
+                                    Mulai Proses Pesanan
+                                </button>
+                            }
+                            @if (Model.OrderHeader.OrderStatus == SD.StatusInProcess)
+                            {
+                                <button type="submit" asp-action="ShipOrder"
+                                        class="btn btn-success w-100 rounded-pill fw-bold py-2 shadow-sm">
+                                    Kirim Barang
+                                </button>
+                            }
+                        </form>
+                    }
                 </div>
             </div>
         </div>

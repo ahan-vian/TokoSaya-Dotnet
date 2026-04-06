@@ -68,4 +68,29 @@ public class OrderController : Controller
 
         return View(orderVM);
     }
+    [HttpPost]
+    [Authorize(Roles = SD.Role_Admin)] // Hanya Admin yang boleh memicu ini
+    public IActionResult StartProcessing(int id)
+    {
+        var orderHeader = _context.OrderHeaders.FirstOrDefault(u => u.Id == id);
+        if (orderHeader != null)
+        {
+            orderHeader.OrderStatus = SD.StatusInProcess;
+            _context.SaveChanges();
+        }
+        return RedirectToAction("Details", new { id = id });
+    }
+
+    [HttpPost]
+    [Authorize(Roles = SD.Role_Admin)]
+    public IActionResult ShipOrder(int id)
+    {
+        var orderHeader = _context.OrderHeaders.FirstOrDefault(u => u.Id == id);
+        if (orderHeader != null)
+        {
+            orderHeader.OrderStatus = SD.StatusShipped;
+            _context.SaveChanges();
+        }
+        return RedirectToAction("Details", new { id = id });
+    }
 }
