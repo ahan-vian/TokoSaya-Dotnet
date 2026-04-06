@@ -1,0 +1,58 @@
+@model TokoSaya.ViewModels.OrderVM
+
+@{
+    ViewData["Title"] = "Detail Pesanan";
+}
+
+<div class="container py-5">
+    <div class="row">
+        <div class="col-md-5">
+            <div class="card border-0 shadow-sm rounded-4">
+                <div class="card-header bg-primary text-white py-3 px-4">
+                    <h4 class="fw-bold">Detail Pengiriman</h4>
+                </div>
+                <div class="card-body p-4">
+                    <p><strong>Nama:</strong> @Model.OrderHeader.Name</p>
+                    <p><strong>Nomor Telepon:</strong> @Model.OrderHeader.PhoneNumber</p>
+                    <p><strong>Alamat:</strong> @Model.OrderHeader.StreetAddress</p>
+                    <p><strong>Tanggal Pesanan:</strong> @Model.OrderHeader.OrderDate.ToShortDateString()</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-7">
+            <div class="card border-0 shadow-sm rounded-4">
+                <div class="card-header bg-info text-white py-3 px-4">
+                    <h4 class="fw-bold">Rincian Pesanan</h4>
+                </div>
+                <div class="card-body p-4">
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th>Nama Produk</th>
+                                <th>Harga</th>
+                                <th>Jumlah</th>
+                                <th>Subtotal</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model.OrderDetail)
+                            {
+                                <tr>
+                                    <td>@(item.Product?.Name)</td>
+                                    <td>Rp @(item.Price.ToString("N0"))</td>
+                                    <td>@(item.Count)</td>
+                                    <td>Rp @((item.Count * item.Price).ToString("N0"))</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+
+                    <div class="d-flex justify-content-between">
+                        <h5 class="fw-bold">Total Harga:</h5>
+                        <h5 class="fw-bold text-success">Rp @Model.OrderHeader.OrderTotal.ToString("N0")</h5>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
