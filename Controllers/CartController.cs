@@ -115,7 +115,7 @@ public class CartController : Controller
         _context.ShoppingCarts.RemoveRange(cartItems);
         _context.SaveChanges();
 
-        return RedirectToAction("OrderConfirmation", new { id = shoppingCartVM.OrderHeader.Id });
+        return RedirectToAction("Payment", new { id = shoppingCartVM.OrderHeader.Id });
     }
 
     [HttpGet]
@@ -128,5 +128,41 @@ public class CartController : Controller
             return NotFound();
         }
         return View(orderHeader);
+    }
+
+    [HttpGet]
+    public IActionResult Payment(int id)
+    {
+        // Cari pesanan berdasarkan ID yang dilempar dari Summary
+        var orderHeader = _context.OrderHeaders.FirstOrDefault(u => u.Id == id);
+        if (orderHeader == null)
+        {
+            return NotFound();
+        }
+        return View(orderHeader);
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public IActionResult Payment(int id, IFormFile file, [FromServices] IWebHostEnvironment webHostEnvironment)
+    {
+        var orderHeader = _context.OrderHeaders.FirstOrDefault(u => u.Id == id);
+        if (orderHeader == null) return NotFound();
+        if (file != null && file.Length > 0)
+        {
+            string wwwRootPath = webHostEnvironment.WebRootPath;
+            string fileName = Guid.NewGuid().ToString() + Path.GetExtension(file.FileName);
+            string receiptPath = Path.Combine(wwwRootPath, @"images\receipts");
+
+            using (var fileStream = new FileStream(Path.Combine(receiptPath, fileName), FileMode.Create))
+            {
+                file.CopyTo(fileStream);
+            }
+            orderHeader.PaymentReceiptUrl = @"\images\receipts\" + fileName;
+            orderHeader.PaymentStatus = "Menunggu Konfirmasi Admin";
+
+            _context.SaveChanges();
+        }
+        return RedirectToAction("OrderConfirmation", new { id = id });
     }
 }

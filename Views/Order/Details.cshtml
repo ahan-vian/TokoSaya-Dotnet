@@ -16,6 +16,28 @@
                     <p><strong>Nomor Telepon:</strong> @Model.OrderHeader.PhoneNumber</p>
                     <p><strong>Alamat:</strong> @Model.OrderHeader.StreetAddress</p>
                     <p><strong>Tanggal Pesanan:</strong> @Model.OrderHeader.OrderDate.ToShortDateString()</p>
+
+                    @if (!string.IsNullOrEmpty(Model.OrderHeader.PaymentReceiptUrl))
+                    {
+                        <div class="mt-4 pt-3 border-top">
+                            <p class="fw-bold"><i class="bi bi-image"></i> Bukti Pembayaran:</p>
+                            <div class="text-center bg-light p-2 rounded-3 border">
+                                <a href="@Model.OrderHeader.PaymentReceiptUrl" target="_blank">
+                                    <img src="@Model.OrderHeader.PaymentReceiptUrl" class="img-fluid rounded-3 shadow-sm"
+                                         style="max-height: 250px; cursor: zoom-in;" alt="Bukti Transfer" />
+                                </a>
+                                <small class="text-muted d-block mt-2">Klik gambar untuk memperbesar</small>
+                            </div>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="mt-4 pt-3 border-top">
+                            <div class="alert alert-warning py-2 small mb-0">
+                                <i class="bi bi-exclamation-triangle"></i> Belum ada bukti pembayaran diunggah.
+                            </div>
+                        </div>
+                    }
                 </div>
             </div>
         </div>
@@ -60,24 +82,35 @@
 
                     @if (User.IsInRole(SD.Role_Admin))
                     {
-                        <form method="post">
-                            <input type="hidden" name="id" value="@Model.OrderHeader.Id" />
-                            
-                            @if (Model.OrderHeader.OrderStatus == SD.StatusPending)
-                            {
-                                <button type="submit" asp-action="StartProcessing"
-                                        class="btn btn-primary w-100 rounded-pill fw-bold py-2 shadow-sm">
+                        @if (!string.IsNullOrEmpty(Model.OrderHeader.PaymentReceiptUrl) && Model.OrderHeader.PaymentStatus != SD.PaymentStatusApproved)
+                        {
+                            <form asp-controller="Order" asp-action="Pembayaran" method="post" class="mb-3">
+                                <input type="hidden" name="id" value="@Model.OrderHeader.Id" />
+                                <button type="submit" class="btn btn-warning w-100 rounded-pill fw-bold py-2 shadow-sm">
+                                    <i class="bi bi-check-circle"></i> Verifikasi Pembayaran (Set Lunas)
+                                </button>
+                            </form>
+                        }
+
+                        @if (Model.OrderHeader.OrderStatus == SD.StatusPending)
+                        {
+                            <form asp-controller="Order" asp-action="StartProcessing" method="post" class="mb-2">
+                                <input type="hidden" name="id" value="@Model.OrderHeader.Id" />
+                                <button type="submit" class="btn btn-primary w-100 rounded-pill fw-bold py-2 shadow-sm">
                                     Mulai Proses Pesanan
                                 </button>
-                            }
-                            @if (Model.OrderHeader.OrderStatus == SD.StatusInProcess)
-                            {
-                                <button type="submit" asp-action="ShipOrder"
-                                        class="btn btn-success w-100 rounded-pill fw-bold py-2 shadow-sm">
+                            </form>
+                        }
+
+                        @if (Model.OrderHeader.OrderStatus == SD.StatusInProcess)
+                        {
+                            <form asp-controller="Order" asp-action="ShipOrder" method="post" class="mb-2">
+                                <input type="hidden" name="id" value="@Model.OrderHeader.Id" />
+                                <button type="submit" class="btn btn-success w-100 rounded-pill fw-bold py-2 shadow-sm">
                                     Kirim Barang
                                 </button>
-                            }
-                        </form>
+                            </form>
+                        }
                     }
                 </div>
             </div>

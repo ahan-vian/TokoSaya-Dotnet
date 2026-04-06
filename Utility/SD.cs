@@ -9,5 +9,9 @@ namespace TokoSaya.Utility
         public const string StatusInProcess = "Diproses";
         public const string StatusShipped = "Dikirim";
         public const string StatusCompleted = "Selesai";
+
+        public const string PaymentStatusPending = "Pending";
+        public const string PaymentStatusApproved = "Lunas";
+        public const string PaymentStatusRejected = "Ditolak";
     }
 }

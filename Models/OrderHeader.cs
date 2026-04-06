@@ -28,6 +28,7 @@ public class OrderHeader
     public string State {get; set;} = null!;
     [Required]
     public string PostalCode {get; set;} = null!;
+    public string? PaymentReceiptUrl { get; set; }
 
 
 }

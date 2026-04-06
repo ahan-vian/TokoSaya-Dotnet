@@ -1,0 +1,45 @@
+@model TokoSaya.Models.OrderHeader
+
+@{
+    ViewData["Title"] = "Pembayaran";
+}
+
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-7">
+            <div class="card shadow border-0 rounded-4">
+                <div class="card-header bg-primary text-white py-3 text-center rounded-top-4">
+                    <h4 class="mb-0 fw-bold"><i class="bi bi-wallet2"></i> Menunggu Pembayaran</h4>
+                </div>
+                <div class="card-body p-5 text-center">
+                    <p class="text-muted mb-2">Total tagihan untuk Pesanan #@Model.Id</p>
+                    <h1 class="text-success fw-bold mb-4 display-5">Rp @Model.OrderTotal.ToString("N0")</h1>
+                    
+                    <div class="alert alert-info text-start shadow-sm border-0 rounded-3 mb-4">
+                        <h6 class="fw-bold mb-3"><i class="bi bi-bank"></i> Silakan transfer ke salah satu rekening
+                            berikut:</h6>
+                            <ul class="list-unstyled mb-0 ms-2">
+                                <li class="mb-2"><strong>Bank BCA:</strong> 123-456-7890 (a.n. TokoSaya)</li>
+                                <li><strong>Bank Mandiri:</strong> 098-765-4321 (a.n. TokoSaya)</li>
+                            </ul>
+                        </div>
+
+                        <form method="post" enctype="multipart/form-data" class="text-start">
+                            <input type="hidden" name="id" value="@Model.Id" />
+                        
+                            <div class="mb-4">
+                                <label class="form-label fw-bold text-dark">Upload Bukti Transfer</label>
+                                <input type="file" name="file" class="form-control form-control-lg" accept="image/*"
+                                       required />
+                                <small class="text-muted">Format yang didukung: JPG, PNG, JPEG.</small>
+                            </div>
+                        
+                            <button type="submit" class="btn btn-primary w-100 rounded-pill py-3 fw-bold fs-5 shadow">
+                                Konfirmasi Pembayaran
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
