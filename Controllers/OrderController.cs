@@ -4,6 +4,8 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using TokoSaya.Data;
 using TokoSaya.ViewModels;
+using TokoSaya.Models;
+using TokoSaya.Utility;
 
 namespace TokoSaya.Controllers;
 
@@ -19,12 +21,20 @@ public class OrderController : Controller
     [HttpGet]
     public IActionResult Index()
     {
-        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-        if (userId == null || userId == "0")
+        IEnumerable<OrderHeader> orderHeaders;
+        if (User.IsInRole(SD.Role_Admin))
         {
-            return BadRequest();
+            orderHeaders = _context.OrderHeaders.ToList();
         }
-        var orderHeaders = _context.OrderHeaders.Where(u => u.ApplicationUserId == userId).ToList();
+        else
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (userId == null || userId == "0")
+            {
+                return BadRequest();
+            }
+            orderHeaders = _context.OrderHeaders.Where(u => u.ApplicationUserId == userId).ToList();
+        }
         return View(orderHeaders);
     }
 

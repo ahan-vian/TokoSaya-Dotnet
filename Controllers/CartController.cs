@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using TokoSaya.Data;
 using TokoSaya.Models;
 using TokoSaya.ViewModels;
+using TokoSaya.Utility;
 
 namespace TokoSaya.Controllers;
 
@@ -87,8 +88,8 @@ public class CartController : Controller
         var cartItems = _context.ShoppingCarts.Include(u => u.Product).Where(u => u.ApplicationUserId == userId).ToList();
         shoppingCartVM.OrderHeader.ApplicationUserId = userId;
         shoppingCartVM.OrderHeader.OrderDate = DateTime.Now;
-        shoppingCartVM.OrderHeader.OrderStatus = "Pending";
-        shoppingCartVM.OrderHeader.PaymentStatus = "Pending";
+        shoppingCartVM.OrderHeader.OrderStatus = SD.StatusPending;
+        shoppingCartVM.OrderHeader.PaymentStatus = SD.StatusPending;
         decimal orderTotal = 0;
         foreach (var item in cartItems)
         {
