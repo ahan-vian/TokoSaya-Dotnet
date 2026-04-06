@@ -1,0 +1,22 @@
+@model TokoSaya.Models.OrderHeader
+
+@{
+    ViewData["Title"] = "Konfirmasi Pesanan";
+}
+
+<div class="container py-5">
+    <div class="card border-0 shadow-lg rounded-4 overflow-hidden">
+        <div class="card-header bg-success text-white py-3 px-4">
+            <h4 class="fw-bold">Terima Kasih!</h4>
+        </div>
+
+        <div class="card-body p-4 bg-light">
+            <h5 class="fw-bold mb-4">Pesanan Anda Telah Berhasil Dibuat</h5>
+            <p class="mb-4 text-muted">Pesanan Anda dengan ID <strong>@Model.Id</strong> telah berhasil diproses. Kami akan segera memprosesnya dan mengirimkan konfirmasi lebih lanjut.</p>
+
+            <a asp-controller="Home" asp-action="Index" class="btn btn-primary btn-lg rounded-pill px-4">
+                Kembali ke Beranda
+            </a>
+        </div>
+    </div>
+</div>

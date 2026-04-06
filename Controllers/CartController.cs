@@ -20,7 +20,7 @@ public class CartController : Controller
     [HttpPost]
     public IActionResult AddToCart(int productId)
     {
-        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier); 
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
         if (userId == null)
         {
             return BadRequest();
@@ -64,15 +64,68 @@ public class CartController : Controller
         var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
         var shoppingCartVM = new ShoppingCartVM()
         {
-          ListCart = _context.ShoppingCarts.Include(u=> u.Product).Where(u=> u.ApplicationUserId == userId).ToList(),
-          OrderHeader = new OrderHeader()  
+            ListCart = _context.ShoppingCarts.Include(u => u.Product).Where(u => u.ApplicationUserId == userId).ToList(),
+            OrderHeader = new OrderHeader()
         };
         decimal orderTotal = 0;
-        foreach(var item in shoppingCartVM.ListCart)
+        foreach (var item in shoppingCartVM.ListCart)
         {
             orderTotal += item.Quantity * item.Product.Price;
         }
         shoppingCartVM.OrderHeader.OrderTotal = orderTotal;
         return View(shoppingCartVM);
+    }
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public IActionResult Summary(ShoppingCartVM shoppingCartVM)
+    {
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (userId == null)
+        {
+            return BadRequest();
+        }
+        var cartItems = _context.ShoppingCarts.Include(u => u.Product).Where(u => u.ApplicationUserId == userId).ToList();
+        shoppingCartVM.OrderHeader.ApplicationUserId = userId;
+        shoppingCartVM.OrderHeader.OrderDate = DateTime.Now;
+        shoppingCartVM.OrderHeader.OrderStatus = "Pending";
+        shoppingCartVM.OrderHeader.PaymentStatus = "Pending";
+        decimal orderTotal = 0;
+        foreach (var item in cartItems)
+        {
+            orderTotal += (item.Quantity * item.Product.Price);
+        }
+        shoppingCartVM.OrderHeader.OrderTotal = orderTotal;
+        _context.OrderHeaders.Add(shoppingCartVM.OrderHeader);
+        _context.SaveChanges();
+
+        foreach (var item in cartItems)
+        {
+            var orderDetail = new OrderDetail()
+            {
+                ProductId = item.ProductId,
+                OrderHeaderId = shoppingCartVM.OrderHeader.Id,
+                Price = item.Product.Price,
+                Count = item.Quantity,
+            };
+            _context.OrderDetails.Add(orderDetail);
+        }
+        _context.SaveChanges();
+
+        _context.ShoppingCarts.RemoveRange(cartItems);
+        _context.SaveChanges();
+
+        return RedirectToAction("OrderConfirmation", new { id = shoppingCartVM.OrderHeader.Id });
+    }
+
+    [HttpGet]
+    public IActionResult OrderConfirmation(int id)
+    {
+        var orderHeader = _context.OrderHeaders
+            .FirstOrDefault(o => o.Id == id);
+        if (orderHeader == null)
+        {
+            return NotFound();
+        }
+        return View(orderHeader);
     }
 }
