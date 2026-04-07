@@ -59,23 +59,56 @@ public class CartController : Controller
         return View(cartItems);
     }
 
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public IActionResult ProceedToCheckout(List<int> selectedCartIds, Dictionary<int, int> quantities)
+    {
+        if (selectedCartIds == null || selectedCartIds.Count == 0)
+        {
+            TempData["Error"] = "Pilih minimal satu barang untuk dicheckout!";
+            return RedirectToAction(nameof(Index));
+        }
+        foreach (var cartId in selectedCartIds)
+        {
+            var cartFromDb = _context.ShoppingCarts.FirstOrDefault(c => c.Id == cartId);
+            if (cartFromDb != null && quantities.ContainsKey(cartId))
+            {
+                cartFromDb.Quantity = quantities[cartId];
+            }
+        }
+        _context.SaveChanges();
+        HttpContext.Session.SetString("SelectedCartIds", System.Text.Json.JsonSerializer.Serialize(selectedCartIds));
+        return RedirectToAction("Summary");
+    }
+
     [HttpGet]
     public IActionResult Summary()
     {
         var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        var selectedIdsJson = HttpContext.Session.GetString("SelectedCartIds");
+        if (string.IsNullOrEmpty(selectedIdsJson))
+        {
+            return RedirectToAction(nameof(Index));
+        }
+        var selectedCartIds = System.Text.Json.JsonSerializer.Deserialize<List<int>>(selectedIdsJson) ?? new List<int>();
+
         var shoppingCartVM = new ShoppingCartVM()
         {
-            ListCart = _context.ShoppingCarts.Include(u => u.Product).Where(u => u.ApplicationUserId == userId).ToList(),
+            ListCart = _context.ShoppingCarts.Include(u => u.Product)
+                        .Where(u => u.ApplicationUserId == userId && selectedCartIds.Contains(u.Id)).ToList(),
             OrderHeader = new OrderHeader()
         };
+
         decimal orderTotal = 0;
         foreach (var item in shoppingCartVM.ListCart)
         {
             orderTotal += item.Quantity * item.Product.Price;
         }
         shoppingCartVM.OrderHeader.OrderTotal = orderTotal;
+
         return View(shoppingCartVM);
     }
+
     [HttpPost]
     [ValidateAntiForgeryToken]
     public IActionResult Summary(ShoppingCartVM shoppingCartVM)
@@ -85,17 +118,24 @@ public class CartController : Controller
         {
             return BadRequest();
         }
-        var cartItems = _context.ShoppingCarts.Include(u => u.Product).Where(u => u.ApplicationUserId == userId).ToList();
+        var selectedIdsJson = HttpContext.Session.GetString("SelectedCartIds");
+        if (string.IsNullOrEmpty(selectedIdsJson)) return RedirectToAction(nameof(Index));
+        var selectedCartIds = System.Text.Json.JsonSerializer.Deserialize<List<int>>(selectedIdsJson) ?? new List<int>();
+        var cartItems = _context.ShoppingCarts.Include(u => u.Product)
+                        .Where(u => u.ApplicationUserId == userId && selectedCartIds.Contains(u.Id)).ToList();
+
         shoppingCartVM.OrderHeader.ApplicationUserId = userId;
         shoppingCartVM.OrderHeader.OrderDate = DateTime.Now;
         shoppingCartVM.OrderHeader.OrderStatus = SD.StatusPending;
         shoppingCartVM.OrderHeader.PaymentStatus = SD.StatusPending;
+
         decimal orderTotal = 0;
         foreach (var item in cartItems)
         {
             orderTotal += (item.Quantity * item.Product.Price);
         }
         shoppingCartVM.OrderHeader.OrderTotal = orderTotal;
+
         _context.OrderHeaders.Add(shoppingCartVM.OrderHeader);
         _context.SaveChanges();
 
@@ -111,9 +151,9 @@ public class CartController : Controller
             _context.OrderDetails.Add(orderDetail);
         }
         _context.SaveChanges();
-
         _context.ShoppingCarts.RemoveRange(cartItems);
         _context.SaveChanges();
+        HttpContext.Session.Remove("SelectedCartIds");
 
         return RedirectToAction("Payment", new { id = shoppingCartVM.OrderHeader.Id });
     }

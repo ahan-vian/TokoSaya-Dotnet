@@ -13,7 +13,7 @@
                     <h2 class="fw-bold mb-1">Keranjang Belanja</h2>
                     <p class="mb-0 text-white-50">Kelola produk yang ingin Anda beli</p>
                 </div>
-                <a asp-controller="Product" asp-action="Index"
+                <a asp-controller="Home" asp-action="Index"
                        class="btn btn-light btn-lg rounded-pill px-4 fw-semibold shadow-sm">
                     Lanjutkan Belanja
                 </a>
@@ -23,78 +23,91 @@
         <div class="card-body p-4 bg-light">
             @if (Model != null && Model.Any())
             {
-                <div class="table-responsive">
-                    <table class="table align-middle table-hover bg-white rounded-4 overflow-hidden">
-                        <thead class="table-light">
-                            <tr>
-                                <th class="py-3">Gambar</th>
-                                <th class="py-3">Nama Produk</th>
-                                <th class="py-3">Jumlah</th>
-                                <th class="py-3">Harga per Barang</th>
-                                <th class="py-3">Total Harga</th>
-                                <th class="py-3 text-center">Aksi</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach (var item in Model)
-                            {
+                <form asp-controller="Cart" asp-action="ProceedToCheckout" method="post">
+                    <div class="table-responsive">
+                        <table class="table align-middle table-hover bg-white rounded-4 overflow-hidden">
+                            <thead class="table-light">
                                 <tr>
-                                    <td>
-                                        @if (item.Product != null && !string.IsNullOrEmpty(item.Product.ImageUrl))
-                                        {
-                                            <img src="@item.Product.ImageUrl" alt="@item.Product.Name"
-                                                 class="rounded-3 border shadow-sm"
-                                                 style="width: 70px; height: 70px; object-fit: cover;" />
-                                        }
-                                        else
-                                        {
-                                            <div class="d-flex align-items-center justify-content-center bg-light border rounded-3 text-muted"
-                                                 style="width: 70px; height: 70px;">
-                                                No Img
-                                            </div>
-                                        }
-                                    </td>
-                                    <td>
-                                        <div class="fw-bold text-dark">@item.Product?.Name</div>
-                                    </td>
-                                    <td>
-                                        <input type="number" class="form-control" value="@item.Quantity" min="1"
-                                               id="quantity-@item.Id" onchange="updateTotal(@item.Id)" />
-                                    </td>
-                                    <td>
-                                        <span class="fw-semibold text-success">
-                                            Rp @((item.Product?.Price ?? 0).ToString("N0"))
-                                        </span>
-                                    </td>
-                                    <td>
-                                        <span class="fw-semibold text-success" id="total-price-@item.Id">
-                                            Rp @((item.Quantity * (item.Product?.Price ?? 0)).ToString("N0"))
-                                        </span>
-                                    </td>
-                                    <td class="text-center">
-                                        <a asp-action="RemoveFromCart" asp-route-id="@item.Id"
-                                               class="btn btn-danger btn-sm rounded-pill">
-                                            Hapus
-                                        </a>
-                                    </td>
+                                    <th class="py-3 text-center" style="width: 50px;">
+                                        <input class="form-check-input fs-5" type="checkbox" id="selectAll" checked
+                                               onchange="toggleAll(this)">
+                                    </th>
+                                    <th class="py-3">Gambar</th>
+                                    <th class="py-3">Nama Produk</th>
+                                    <th class="py-3" style="width: 150px;">Jumlah</th>
+                                    <th class="py-3">Harga per Barang</th>
+                                    <th class="py-3">Total Harga</th>
+                                    <th class="py-3 text-center">Aksi</th>
                                 </tr>
-                            }
-                        </tbody>
-                    </table>
-                </div>
-                <div class="d-flex justify-content-end mt-3">
-                    <a asp-controller="Cart" asp-action="Summary"
-                           class="btn btn-warning btn-lg rounded-pill px-4 fw-semibold">
-                        Checkout
-                    </a>
-                </div>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in Model)
+                                {
+                                    <tr>
+                                        <td class="text-center">
+                                            <input class="form-check-input item-check fs-5" type="checkbox"
+                                                   name="selectedCartIds" value="@item.Id" checked
+                                                   onchange="calculateGrandTotal()">
+                                        </td>
+                                        <td>
+                                            @if (item.Product != null && !string.IsNullOrEmpty(item.Product.ImageUrl))
+                                            {
+                                                <img src="@item.Product.ImageUrl" alt="@item.Product.Name"
+                                                     class="rounded-3 border shadow-sm"
+                                                     style="width: 70px; height: 70px; object-fit: cover;" />
+                                            }
+                                        </td>
+                                        <td>
+                                            <div class="fw-bold text-dark">@item.Product?.Name</div>
+                                        </td>
+                                        <td>
+                                            <input type="number" class="form-control item-qty" name="quantities[@item.Id]"
+                                                   value="@item.Quantity" min="1" data-price="@(item.Product?.Price ?? 0)"
+                                                   oninput="calculateGrandTotal()" onchange="calculateGrandTotal()" />
+                                        </td>
+                                        <td>
+                                            <span class="fw-semibold text-secondary">
+                                                Rp @((item.Product?.Price ?? 0).ToString("N0"))
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <span class="fw-bold text-success row-total">
+                                                Rp @((item.Quantity * (item.Product?.Price ?? 0)).ToString("N0"))
+                                            </span>
+                                        </td>
+                                        <td class="text-center">
+                                            <a asp-action="RemoveFromCart" asp-route-id="@item.Id"
+                                                   class="btn btn-outline-danger btn-sm rounded-pill px-3">
+                                                <i class="bi bi-trash"></i> Hapus
+                                            </a>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="row mt-4 align-items-center bg-white p-4 rounded-4 shadow-sm border">
+                        <div class="col-md-6 text-md-start text-center mb-3 mb-md-0">
+                            <span class="text-muted fs-5">Total Harga Keseluruhan:</span>
+                            <br />
+                            <span class="fw-bold text-primary display-6" id="grand-total">Rp 0</span>
+                        </div>
+                        <div class="col-md-6 text-md-end text-center">
+                            <button type="submit" id="btn-checkout"
+                                    class="btn btn-warning btn-lg rounded-pill px-5 fw-bold shadow">
+                                Checkout Sekarang <i class="bi bi-arrow-right-circle ms-2"></i>
+                            </button>
+                        </div>
+                    </div>
+                </form>
             }
             else
             {
                 <div class="text-center py-5">
                     <h4 class="fw-bold text-secondary mb-2">Keranjang Anda Kosong</h4>
                     <p class="text-muted mb-4">Tambahkan produk ke keranjang belanja untuk melanjutkan.</p>
-                    <a asp-controller="Product" asp-action="Index" class="btn btn-primary rounded-pill px-4">
+                    <a asp-controller="Home" asp-action="Index" class="btn btn-primary rounded-pill px-4">
                         Lanjutkan Belanja
                     </a>
                 </div>
@@ -105,11 +118,41 @@
 
 @section Scripts {
     <script>
-        function updateTotal(itemId) {
-            var quantity = document.getElementById("quantity-" + itemId).value;
-            var price = Html.Raw(Json.Serialize(Model.FirstOrDefault(x => x.Id == itemId)?.Product?.Price ?? 0));
-            var totalPrice = quantity * price;
-            document.getElementById("total-price-" + itemId).textContent = "Rp " + totalPrice.toLocaleString();
+ 
+        function calculateGrandTotal() {
+            let grandTotal = 0;
+            let checkedCount = 0;
+            const checkboxes = document.querySelectorAll('.item-check');
+
+            checkboxes.forEach(cb => {
+                const row = cb.closest('tr');
+                const qtyInput = row.querySelector('.item-qty');
+                const price = parseFloat(qtyInput.getAttribute('data-price'));
+                const qty = parseInt(qtyInput.value) || 1; 
+                const rowTotal = price * qty;
+                row.querySelector('.row-total').innerText = 'Rp ' + rowTotal.toLocaleString('id-ID');
+
+                if (cb.checked) {
+                    grandTotal += rowTotal;
+                    checkedCount++;
+                }
+            });
+            document.getElementById('grand-total').innerText = 'Rp ' + grandTotal.toLocaleString('id-ID');
+
+            const btnCheckout = document.getElementById('btn-checkout');
+            if (checkedCount === 0) {
+                btnCheckout.disabled = true;
+                btnCheckout.classList.add('opacity-50');
+            } else {
+                btnCheckout.disabled = false;
+                btnCheckout.classList.remove('opacity-50');
+            }
         }
+        function toggleAll(source) {
+            const checkboxes = document.querySelectorAll('.item-check');
+            checkboxes.forEach(cb => cb.checked = source.checked);
+            calculateGrandTotal();
+        }
+        document.addEventListener('DOMContentLoaded', calculateGrandTotal);
     </script>
 }
