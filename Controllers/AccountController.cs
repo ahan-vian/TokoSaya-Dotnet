@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using TokoSaya.Models;
 using TokoSaya.ViewModels;
 using TokoSaya.Utility;
-
+using Microsoft.AspNetCore.Authorization;
 namespace TokoSaya.Controllers;
 
 public class AccountController : Controller
@@ -93,5 +93,57 @@ public class AccountController : Controller
     {
         await _signInManager.SignOutAsync();
         return RedirectToAction("Login");
+    }
+
+    [HttpGet]
+    [Authorize]
+    public async Task<IActionResult> Profile()
+    {
+        var user = await _userManager.GetUserAsync(User);
+        if (user == null) return NotFound();
+        var model = new ProfileVM
+        {
+            Name = user.Name,
+            Email = user.Email ?? ""
+        };
+
+        return View(model);
+    }
+
+    [HttpPost]
+    [Authorize]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Profile(ProfileVM model)
+    {
+        if (!ModelState.IsValid) return View(model);
+
+        var user = await _userManager.GetUserAsync(User);
+        if (user == null) return NotFound();
+        if (user.Name != model.Name)
+        {
+            user.Name = model.Name;
+            await _userManager.UpdateAsync(user);
+        }
+        if (user.Email != model.Email)
+        {
+            await _userManager.SetEmailAsync(user, model.Email);
+            await _userManager.SetUserNameAsync(user, model.Email);
+        }
+        if (!string.IsNullOrEmpty(model.OldPassword) && !string.IsNullOrEmpty(model.NewPassword))
+        {
+            var passwordResult = await _userManager.ChangePasswordAsync(user, model.OldPassword, model.NewPassword);
+
+            if (!passwordResult.Succeeded)
+            {
+                foreach (var error in passwordResult.Errors)
+                {
+                    ModelState.AddModelError(string.Empty, error.Description);
+                }
+                return View(model);
+            }
+            await _signInManager.RefreshSignInAsync(user);
+        }
+        TempData["Success"] = "Profil Anda berhasil diperbarui!";
+        return RedirectToAction("Profile");
     }
 }
