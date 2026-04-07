@@ -147,13 +147,13 @@
 
             <div class="mb-3">
                 <label asp-for="Password" class="form-label">Password</label>
-                <input asp-for="Password" class="form-control modern-input" placeholder="Masukkan password" />
+                <input asp-for="Password" type="password" class="form-control modern-input" placeholder="Masukkan password" />
                 <span asp-validation-for="Password" class="text-danger small"></span>
             </div>
 
             <div class="mb-4">
                 <label asp-for="ConfirmPassword" class="form-label">Konfirmasi Password</label>
-                <input asp-for="ConfirmPassword" class="form-control modern-input" placeholder="Ulangi password Anda" />
+                <input asp-for="ConfirmPassword" type="password" class="form-control modern-input" placeholder="Ulangi password Anda" />
                 <span asp-validation-for="ConfirmPassword" class="text-danger small"></span>
             </div>
 

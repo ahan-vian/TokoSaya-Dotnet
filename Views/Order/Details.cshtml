@@ -43,6 +43,13 @@
                                 <i class="bi bi-exclamation-triangle"></i> Belum ada bukti pembayaran diunggah.
                             </div>
                         </div>
+                        @if (Model.OrderHeader.OrderStatus == SD.StatusPending && !User.IsInRole(SD.Role_Admin))
+                        {
+                            <a asp-controller="Cart" asp-action="Payment" asp-route-id="@Model.OrderHeader.Id"
+                                   class="btn btn-primary w-100 rounded-pill fw-bold shadow-sm py-2">
+                                <i class="bi bi-cloud-upload"></i> Upload Bukti Pembayaran
+                            </a>
+                        }
                     }
                 </div>
             </div>
@@ -88,7 +95,8 @@
 
                     @if (User.IsInRole(SD.Role_Admin))
                     {
-                        @if (!string.IsNullOrEmpty(Model.OrderHeader.PaymentReceiptUrl) && Model.OrderHeader.PaymentStatus != SD.PaymentStatusApproved)
+                        @if (!string.IsNullOrEmpty(Model.OrderHeader.PaymentReceiptUrl) && Model.OrderHeader.PaymentStatus
+                                            != SD.PaymentStatusApproved)
                         {
                             <form asp-controller="Order" asp-action="Pembayaran" method="post" class="mb-3">
                                 <input type="hidden" name="id" value="@Model.OrderHeader.Id" />
