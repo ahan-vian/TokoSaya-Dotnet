@@ -29,6 +29,6 @@ public class OrderHeader
     [Required]
     public string PostalCode {get; set;} = null!;
     public string? PaymentReceiptUrl { get; set; }
-
+    public string? OrderNote { get; set; }
 
 }

@@ -6,7 +6,6 @@
 
 <div class="container py-5">
     <div class="row justify-content-between">
-        <!-- Form Pengiriman Kiri -->
         <div class="col-md-5">
             <div class="card border-0 shadow-sm rounded-4">
                 <div class="card-header bg-primary text-white py-3 px-4">
@@ -14,49 +13,40 @@
                 </div>
                 <div class="card-body p-4">
                     <form method="post">
-                        <!-- Nama -->
                         <div class="mb-4">
                             <label asp-for="OrderHeader.Name" class="form-label">Nama Lengkap</label>
                             <input asp-for="OrderHeader.Name" class="form-control" placeholder="Nama Lengkap Anda" />
                             <span asp-validation-for="OrderHeader.Name" class="text-danger small"></span>
                         </div>
-
-                        <!-- Nomor Telepon -->
                         <div class="mb-4">
                             <label asp-for="OrderHeader.PhoneNumber" class="form-label">Nomor Telepon</label>
                             <input asp-for="OrderHeader.PhoneNumber" class="form-control" placeholder="Nomor Telepon Anda" />
                             <span asp-validation-for="OrderHeader.PhoneNumber" class="text-danger small"></span>
                         </div>
-
-                        <!-- Alamat -->
                         <div class="mb-4">
                             <label asp-for="OrderHeader.StreetAddress" class="form-label">Alamat Pengiriman</label>
                             <input asp-for="OrderHeader.StreetAddress" class="form-control" placeholder="Alamat lengkap pengiriman" />
                             <span asp-validation-for="OrderHeader.StreetAddress" class="text-danger small"></span>
                         </div>
-
-                        <!-- Kota -->
                         <div class="mb-4">
                             <label asp-for="OrderHeader.City" class="form-label">Kota</label>
                             <input asp-for="OrderHeader.City" class="form-control" placeholder="Kota" />
                             <span asp-validation-for="OrderHeader.City" class="text-danger small"></span>
                         </div>
-
-                        <!-- Negara Bagian -->
                         <div class="mb-4">
                             <label asp-for="OrderHeader.State" class="form-label">Negara Bagian</label>
                             <input asp-for="OrderHeader.State" class="form-control" placeholder="Negara Bagian" />
                             <span asp-validation-for="OrderHeader.State" class="text-danger small"></span>
                         </div>
-
-                        <!-- Kode Pos -->
                         <div class="mb-4">
                             <label asp-for="OrderHeader.PostalCode" class="form-label">Kode Pos</label>
                             <input asp-for="OrderHeader.PostalCode" class="form-control" placeholder="Kode Pos" />
                             <span asp-validation-for="OrderHeader.PostalCode" class="text-danger small"></span>
                         </div>
-
-                        <!-- Tombol Submit -->
+                        <div class="mb-4">
+                            <label asp-for="OrderHeader.OrderNote" class="form-label">Catatan untuk Penjual (Opsional)</label>
+                            <textarea asp-for="OrderHeader.OrderNote" class="form-control shadow-sm" rows="3" placeholder="Contoh: Tolong packing dengan bubble wrap tebal, atau Titip di pos satpam ya..."></textarea>
+                        </div>
                         <div class="d-flex justify-content-between">
                             <button type="submit" class="btn btn-primary rounded-pill px-4 py-2 fw-semibold">
                                 Pesan Sekarang
@@ -67,7 +57,6 @@
             </div>
         </div>
 
-        <!-- Ringkasan Belanja Kanan -->
         <div class="col-md-6">
             <div class="card border-0 shadow-sm rounded-4">
                 <div class="card-header bg-info text-white py-3 px-4">
